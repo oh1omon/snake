@@ -63,6 +63,34 @@ void Draw(){
     endwin();
 }
 
+void Input(){
+    keypad(stdscr, true);
+    halfdelay(1);
+    
+    //Getting a char
+    int c = getch();
+    switch (c) {
+        case KEY_LEFT:
+            dir=LEFT;
+            break;
+        case KEY_RIGHT:
+            dir=RIGHT;
+            break;
+        case KEY_UP:
+            dir=UP;
+            break;
+        case KEY_DOWN:
+            dir=DOWN;
+            break;
+        case 113:
+            gameOver=true;
+            break;
+            
+        default:
+            break;
+    }
+}
+
 
 int main(int argc, const char * argv[]) {
     Setup();
