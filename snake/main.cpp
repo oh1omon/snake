@@ -9,21 +9,25 @@ enum eDirection {STOP = 0, LEFT, RIGHT, UP, DOWN};
 eDirection dir;
 
 
-//Function to draw the horizontal line of # symbols
+//Function to draw the horizontal line of + symbols
 void DrawLine(int lineLength){
     for (int i=0; i<lineLength+1; i++) {
-        printw("#");
+        printw("+");
     }
-    printw("\n");
+}
+
+void FruitGenerator(){
+    fruitX = rand() % width;
+    fruitY = rand() % height;
 }
 
 void Setup(){
-    gameOver=false;
+    gameOver = false;
+    score = 0;
     dir = STOP;
     x = width / 2 - 1;
     y = height / 2 - 1;
-    fruitX = rand() % width;
-    fruitY = rand() % height;
+    FruitGenerator();
     
     //Initializing everything for ncurse
     initscr();
@@ -38,12 +42,11 @@ void Draw(){
     //Drawing the top border
     DrawLine(width);
     
-    for (int i=0; i<height; i++) {
-        for (int j = 0 ; j<width; j++) {
-            if (j==0 || j==width-1) {
-                printw("#");
-            }
-            if (i == y && j == x) {
+    for (int i = 0; i < height; i++) {
+        for (int j = 0 ; j < width; j++) {
+            if (j == 0 | j == width - 1) {
+                printw("+");
+            } else if (i == y && j == x) {
                 printw("O");
             } else if (i == fruitY && j == fruitX ) {
                 printw("F");
@@ -57,10 +60,8 @@ void Draw(){
     //Drawing the bottom border
     DrawLine(width);
     
-    printw("Score is: ", score);
+    printw("Score is: %d", score);
     refresh();
-    getch();
-    endwin();
 }
 
 void Input(){
@@ -85,25 +86,50 @@ void Input(){
         case 113:
             gameOver=true;
             break;
-            
-        default:
-            break;
     }
 }
 
+void Logic(){
+    
+    //Handling the actual movement
+    switch (dir) {
+        case LEFT:
+            x--;
+            break;
+        case RIGHT:
+            x++;
+            break;
+        case UP:
+            y--;
+            break;
+        case DOWN:
+            y++;
+            break;
+        default:
+            break;
+    }
+    
+    //Border collision check
+    if (x > width || x < 1 || y > height || y < 1) {
+        gameOver = true;
+    }
+    
+    //Fruit eating logic
+    if (x == fruitX && y == fruitY) {
+        score++;
+        FruitGenerator();
+    }
+}
 
 int main(int argc, const char * argv[]) {
     Setup();
-    Draw();
-    //    Setup();
-    //    while (!gameOver) {
-    //        Draw();
-    //    }
-//    initscr();
-//    printw("Enter a character: ");
-//    refresh();
-//    getch();
-//    refresh();
-//
+    while (!gameOver) {
+        Draw();
+        Logic();
+        Input();
+    }
+    getch();
+    endwin();
+    
     return 0;
 }
